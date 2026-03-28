@@ -1,12 +1,55 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
+import { SignupFormData, signupSchema } from '@/lib/auth/schema';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
-const SignupForm = () => {
+interface SignupFormProps {
+  onSubmit: (data: SignupFormData) => Promise<void>;
+}
+
+const SignupForm = ({ onSubmit }: SignupFormProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  const handleSubmit = async (data: SignupFormData) => {
+    setIsSubmitting(true);
+
+    try {
+      await onSubmit(data);
+    } catch (e) {
+      console.error('Signup error:', e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Card className="mx-auto w-full max-w-md">
       <CardHeader>
@@ -15,6 +58,95 @@ const SignupForm = () => {
           Enter your information to create a new account
         </CardDescription>
       </CardHeader>
+      <CardContent>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <FieldGroup>
+            <Controller
+              name="name"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="name">Name</FieldLabel>
+                  <Input
+                    {...field}
+                    id="name"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your name"
+                    disabled={isSubmitting}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="email"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <Input
+                    {...field}
+                    id="email"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your email"
+                    disabled={isSubmitting}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="password"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <Input
+                    {...field}
+                    id="password"
+                    type="password"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your password"
+                    disabled={isSubmitting}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="confirmPassword"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="confirmPassword">
+                    Confirm Password
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="confirmPassword"
+                    type="password"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Confirm your password"
+                    disabled={isSubmitting}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing up...' : 'Sign Up'}
+            </Button>
+          </FieldGroup>
+        </form>
+      </CardContent>
     </Card>
   );
 };
