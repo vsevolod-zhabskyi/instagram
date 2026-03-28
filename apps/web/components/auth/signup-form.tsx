@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { SignupFormData, signupSchema } from '@/lib/auth/schema';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,8 +26,6 @@ interface SignupFormProps {
 }
 
 const SignupForm = ({ onSubmit }: SignupFormProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -38,15 +36,13 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
     },
   });
 
-  const handleSubmit = async (data: SignupFormData) => {
-    setIsSubmitting(true);
+  const { isSubmitting } = form.formState;
 
+  const handleSubmit = async (data: SignupFormData) => {
     try {
       await onSubmit(data);
     } catch (e) {
       console.error('Signup error:', e);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
