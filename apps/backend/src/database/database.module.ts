@@ -17,7 +17,9 @@ import * as authSchema from '../auth/schema';
         });
 
         return drizzle(pool, {
-          ...authSchema,
+          schema: {
+            ...authSchema,
+          },
         });
       },
     },
