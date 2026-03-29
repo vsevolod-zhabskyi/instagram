@@ -93,7 +93,7 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
               )}
             />
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'Logging in...' : 'Sign In'}
+              {isSubmitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </FieldGroup>
         </form>
