@@ -1,9 +1,20 @@
 'use client';
 
-import SignupForm from '@/components/auth/signup-form';
+import { authClient } from '@/lib/auth/client';
+import { SignupFormData } from '@/lib/auth/schema';
+
 import Link from 'next/link';
+import SignupForm from '@/components/auth/signup-form';
 
 export default function SignupPage() {
+  const handleSubmit = async (data: SignupFormData) => {
+    await authClient.signUp.email({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
+  };
+
   return (
     <div className="bg-background flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
@@ -21,7 +32,7 @@ export default function SignupPage() {
             </Link>
           </p>
         </div>
-        <SignupForm onSubmit={async (data) => console.log(data)} />
+        <SignupForm onSubmit={handleSubmit} />
       </div>
     </div>
   );

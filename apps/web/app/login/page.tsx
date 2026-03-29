@@ -1,9 +1,19 @@
 'use client';
 
-import LoginForm from '@/components/auth/login-form';
+import { authClient } from '@/lib/auth/client';
+import { LoginFormData } from '@/lib/auth/schema';
+
 import Link from 'next/link';
+import LoginForm from '@/components/auth/login-form';
 
 export default function LoginPage() {
+  const handleSubmit = async (data: LoginFormData) => {
+    await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    });
+  };
+
   return (
     <div className="bg-background flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
@@ -21,7 +31,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-        <LoginForm onSubmit={async (data) => console.log(data)} />
+        <LoginForm onSubmit={handleSubmit} />
       </div>
     </div>
   );
