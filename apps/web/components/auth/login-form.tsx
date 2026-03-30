@@ -1,7 +1,7 @@
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginFormData, loginSchema } from '@/lib/auth/schema';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, UseFormSetError } from 'react-hook-form';
 
 import {
   Card,
@@ -20,7 +20,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => Promise<void>;
+  onSubmit: (
+    data: LoginFormData,
+    setError: UseFormSetError<LoginFormData>,
+  ) => Promise<void>;
 }
 
 const LoginForm = ({ onSubmit }: LoginFormProps) => {
@@ -32,11 +35,11 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
     },
   });
 
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, errors } = form.formState;
 
   const handleSubmit = async (data: LoginFormData) => {
     try {
-      await onSubmit(data);
+      await onSubmit(data, form.setError);
     } catch (e) {
       console.error('Login error:', e);
     }
@@ -61,6 +64,12 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
                   <FieldLabel htmlFor="email">Email</FieldLabel>
                   <Input
                     {...field}
+                    onChange={(e) => {
+                      if (form.formState.errors.root) {
+                        form.clearErrors('root');
+                      }
+                      field.onChange(e);
+                    }}
                     id="email"
                     aria-invalid={fieldState.invalid}
                     placeholder="Enter your email"
@@ -80,6 +89,12 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <Input
                     {...field}
+                    onChange={(e) => {
+                      if (form.formState.errors.root) {
+                        form.clearErrors('root');
+                      }
+                      field.onChange(e);
+                    }}
                     id="password"
                     type="password"
                     aria-invalid={fieldState.invalid}
@@ -92,6 +107,9 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
                 </Field>
               )}
             />
+            {errors.root && (
+              <FieldError errors={[errors.root]} className="text-center" />
+            )}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Signing in...' : 'Sign In'}
             </Button>
