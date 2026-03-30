@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { SignupFormData, signupSchema } from '@/lib/auth/schema';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, UseFormSetError } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
@@ -22,7 +22,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 interface SignupFormProps {
-  onSubmit: (data: SignupFormData) => Promise<void>;
+  onSubmit: (
+    data: SignupFormData,
+    setError: UseFormSetError<SignupFormData>,
+  ) => Promise<void>;
 }
 
 const SignupForm = ({ onSubmit }: SignupFormProps) => {
@@ -36,11 +39,11 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
     },
   });
 
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, errors } = form.formState;
 
   const handleSubmit = async (data: SignupFormData) => {
     try {
-      await onSubmit(data);
+      await onSubmit(data, form.setError);
     } catch (e) {
       console.error('Signup error:', e);
     }
@@ -137,6 +140,9 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
                 </Field>
               )}
             />
+            {errors.root && (
+              <FieldError errors={[errors.root]} className="text-center" />
+            )}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Signing up...' : 'Sign Up'}
             </Button>
