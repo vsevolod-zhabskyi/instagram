@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
+import { authClient } from '@/lib/auth/client';
 import { SignupFormData, signupSchema } from '@/lib/auth/schema';
-import { Controller, useForm, UseFormSetError } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 
 import {
   Card,
@@ -21,14 +23,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-interface SignupFormProps {
-  onSubmit: (
-    data: SignupFormData,
-    setError: UseFormSetError<SignupFormData>,
-  ) => Promise<void>;
-}
+const SignupForm = () => {
+  const router = useRouter();
 
-const SignupForm = ({ onSubmit }: SignupFormProps) => {
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -43,7 +40,23 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
 
   const handleSubmit = async (data: SignupFormData) => {
     try {
-      await onSubmit(data, form.setError);
+      const { error } = await authClient.signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) {
+        form.setError('email', { message: 'Email is already in use' });
+        return;
+      }
+
+      await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+      });
+
+      router.push('/');
     } catch (e) {
       console.error('Signup error:', e);
     }
