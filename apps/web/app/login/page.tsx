@@ -1,33 +1,7 @@
-'use client';
-
-import { authClient } from '@/lib/auth/client';
-import { LoginFormData } from '@/lib/auth/schema';
-import { useRouter } from 'next/navigation';
-
 import Link from 'next/link';
 import LoginForm from '@/components/auth/login-form';
-import { UseFormSetError } from 'react-hook-form';
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  const handleSubmit = async (
-    data: LoginFormData,
-    setError: UseFormSetError<LoginFormData>,
-  ) => {
-    const { error } = await authClient.signIn.email({
-      email: data.email,
-      password: data.password,
-    });
-
-    if (error) {
-      setError('root', { message: 'Invalid email or password' });
-      return;
-    }
-
-    router.push('/');
-  };
-
   return (
     <div className="bg-background flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
@@ -45,7 +19,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-        <LoginForm onSubmit={handleSubmit} />
+        <LoginForm />
       </div>
     </div>
   );

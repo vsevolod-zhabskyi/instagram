@@ -1,7 +1,9 @@
 import React from 'react';
+import { authClient } from '@/lib/auth/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginFormData, loginSchema } from '@/lib/auth/schema';
-import { Controller, useForm, UseFormSetError } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 import {
   Card,
@@ -19,14 +21,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-interface LoginFormProps {
-  onSubmit: (
-    data: LoginFormData,
-    setError: UseFormSetError<LoginFormData>,
-  ) => Promise<void>;
-}
+const LoginForm = () => {
+  const router = useRouter();
 
-const LoginForm = ({ onSubmit }: LoginFormProps) => {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -39,7 +36,17 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
 
   const handleSubmit = async (data: LoginFormData) => {
     try {
-      await onSubmit(data, form.setError);
+      const { error } = await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) {
+        form.setError('root', { message: 'Invalid email or password' });
+        return;
+      }
+
+      router.push('/');
     } catch (e) {
       console.error('Login error:', e);
     }
