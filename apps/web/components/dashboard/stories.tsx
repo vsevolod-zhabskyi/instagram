@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import { mockStories } from '@/components/feed/stories.mock';
+import { mockStories } from '@/components/dashboard/stories.mock';
 import Image from 'next/image';
 
 export function Stories() {

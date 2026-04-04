@@ -1,4 +1,5 @@
-import { Stories } from '@/components/feed/stories';
+import { Stories } from '@/components/dashboard/stories';
+import { Feed } from '@/components/dashboard/feed';
 
 export default function Home() {
   return (
@@ -7,7 +8,7 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             <Stories />
-            <></>
+            <Feed />
           </div>
           <div className="lg:sticky lg:top-8 lg:h-fit">
             <></>
